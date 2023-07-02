@@ -122,7 +122,7 @@ jobs:
     needs: [deploy]
     runs-on: ubuntu-latest
     environment: 
-      name: development
+      name: test-deployment
       url: 'https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health'
     steps:
       - name: Deploy to Dev
