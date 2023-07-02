@@ -98,6 +98,9 @@ jobs:
   test-deployment:
     name: Make HTTP Call
     runs-on: ubuntu-latest
+    environment:
+      name: 'development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Make HTTP request
@@ -116,40 +119,15 @@ jobs:
             echo ${{ steps.http.outputs.response_code }}
           fi
 
-      - name: Send Notification
-        if: steps.check_response.outputs.rollback == 'true'
-        run: |
-          # Replace this with the command to send a notification
-          echo "Sending notification because the HTTP response code is not 200"
-          echo "Sending notification "${{ steps.check_response.outputs.rollback }}""
-
-  junk:
-    needs: test-deployment
-    name: junk
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Deploy Code
-        run: |
-          echo "${{ needs.test-deployment.outputs.rollback == 'true' }}"
-          echo "${{ needs.test-deployment.outputs.rollback }}"
-          echo "${{ needs.test-deployment.outputs.rollback }}"
-
-  rollback-job:
-    # name: Rollback Job
-    runs-on: ubuntu-latest
-    needs: test-deployment
-    environment:
-      name: 'development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-    if: ${{ needs.test-deployment.check_response.outputs.rollback == 'true' }}
-
-    steps:
+      # - name: Send Notification
+      #   if: steps.check_response.outputs.rollback == 'true'
+      #   run: |
+      #     # Replace this with the command to send a notification
+      #     echo "Sending notification because the HTTP response code is not 200"
+      #     echo "Sending notification "${{ steps.check_response.outputs.rollback }}"
+      
       - name: Deploy to Azure Web App
+        if: steps.check_response.outputs.rollback == 'true'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -158,3 +136,24 @@ jobs:
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
           # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
           images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:6'
+
+  # rollback-job:
+  #   # name: Rollback Job
+  #   runs-on: ubuntu-latest
+  #   needs: test-deployment
+  #   environment:
+  #     name: 'development'
+  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+  #   if: ${{ needs.test-deployment.check_response.outputs.rollback == 'true' }}
+
+  #   steps:
+  #     - name: Deploy to Azure Web App
+  #       id: deploy-to-webapp
+  #       uses: azure/webapps-deploy@v2
+  #       with:
+  #         app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
+  #         slot-name: 'production'
+  #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+  #         # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
+  #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:6'
