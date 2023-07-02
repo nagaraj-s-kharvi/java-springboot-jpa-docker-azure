@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  be:
+    build:
+      context: .
+    container_name: java-springboot-jpa-docker-azure
+    image: allsampledockerimages.azurecr.io/allsampledockerimages/java-springboot-jpa-docker-azure:latest
+    restart: always
+    environment:
+      DATABASE_HOST:
+      DATABASE_PORT: 5432
+      DATABASE_NAME:
+      DATABASE_USERNAME:
+      DATABASE_PASSWORD:
+    ports:
+      - '8080:8080'

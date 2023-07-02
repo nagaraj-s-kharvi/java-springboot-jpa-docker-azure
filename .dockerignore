@@ -1,0 +1,22 @@
+# Default exclusions for Spring Boot #
+.git
+.gradle
+.mvn
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE files #
+**/.idea
+**/.classpath
+**/.project
+
+# Gradle specific exclusions #
+**/build
+
+# Logs #
+**/logs
+**/*.log
+**/*.gz
+
+# Test results #
+**/test-results
+**/test-reports
