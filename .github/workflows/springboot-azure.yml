@@ -133,9 +133,9 @@ jobs:
 
       - name: Deploy Code
         run: |
-          echo "${{ needs.test-deployment.outputs['check_response'] == 'true' }}"
-          echo "${{ needs.test-deployment.steps.check_response.outputs.rollback }}"
-          echo "${{ needs.test-deployment.steps.check_response.outputs['check_response'] }}"
+          echo "${{ needs.test-deployment.outputs.rollback == 'true' }}"
+          echo "${{ needs.test-deployment.outputs.rollback }}"
+          echo "${{ needs.test-deployment.outputs.rollback }}"
 
   rollback-job:
     # name: Rollback Job
