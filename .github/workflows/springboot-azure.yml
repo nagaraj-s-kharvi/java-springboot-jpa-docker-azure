@@ -94,21 +94,9 @@ jobs:
   #     - name: Production Code
   #       run: |
   #         echo "Production Code"
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Deploy Code
-        run: |
-          echo "Deploying Code"
   
   test-deployment:
     name: Make HTTP Call
-    needs: [deploy]
     runs-on: ubuntu-latest
 
     steps:
@@ -145,9 +133,9 @@ jobs:
 
       - name: Deploy Code
         run: |
-          echo ${{ needs.test-deployment.outputs['check_response'] == 'true' }}
-          echo ${{ needs.test-deployment.check_response.outputs.rollback }}
-          echo ${{ needs.test-deployment.check_response.outputs['check_response'] }}
+          echo "${{ needs.test-deployment.outputs['check_response'] == 'true' }}"
+          echo "${{ needs.test-deployment.check_response.outputs.rollback }}"
+          echo "${{ needs.test-deployment.check_response.outputs['check_response'] }}"
 
   rollback-job:
     # name: Rollback Job
