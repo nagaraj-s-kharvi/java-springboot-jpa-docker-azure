@@ -76,13 +76,28 @@ jobs:
       #       echo ${{ steps.http.outputs.response_code }}
       #     fi
 
-      - name: Deploy to Azure Web App
+      # - name: Deploy to Azure Web App
+      #   if: steps.http.outputs.response_code != '200'
+      #   id: deploy-to-webapp
+      #   uses: azure/webapps-deploy@v2
+      #   with:
+      #     app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
+      #     slot-name: 'production'
+      #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+      #     # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
+      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:5'
+
+      - name: Update Variable
         if: steps.http.outputs.response_code == '200'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-          # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
-          images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:5'
+        id: update_variable
+        run: |
+          # Define the variable name and new value
+          variable_name="STABLE_VERSION"
+          new_value=${{ github.run_number }}
+
+          # Update the repository variable using the GitHub API
+          curl -X PATCH \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -d "{\"name\":\"$variable_name\", \"value\":\"$new_value\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/${variable_name}"
