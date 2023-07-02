@@ -10,17 +10,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Build Code
-        run: |
-          echo "Building Code"
 
   # build:
   #   runs-on: ubuntu-latest
@@ -106,7 +95,6 @@ jobs:
   #       run: |
   #         echo "Production Code"
   deploy:
-    needs: build
     name: Deploy
     runs-on: ubuntu-latest
 
@@ -135,6 +123,7 @@ jobs:
         run: |
           if [[ "${{ steps.http.outputs.response_code }}" == "200" ]]; then
             echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
+            echo "rollback=true" >> $GITHUB_OUTPUT
             echo "send_notification=true" >> $GITHUB_OUTPUT
             echo ${{ steps.http.outputs.response_code }}
           fi
@@ -157,6 +146,8 @@ jobs:
       - name: Deploy Code
         run: |
           echo ${{ needs.test-deployment.outputs['check_response'] == 'true' }}
+          echo ${{ needs.test-deployment.check_response.outputs.rollback }}
+          echo ${{ needs.test-deployment.check_response.outputs['check_response'] }}
 
   rollback-job:
     # name: Rollback Job
@@ -166,7 +157,7 @@ jobs:
       name: 'development'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-    if: ${{ needs.test-deployment.outputs['check_response'] == 'true' }}
+    if: ${{ needs.test-deployment.check_response.outputs.rollback == 'true' }}
 
     steps:
       - name: Deploy to Azure Web App
