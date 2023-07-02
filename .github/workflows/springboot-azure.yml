@@ -52,49 +52,6 @@ jobs:
   #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
   #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
   
-  # approval:
-  #   needs: deploy
-  #   if: ${{ github.event.workflow_run.conclusion == 'success' }}
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Create approval
-  #       id: approval
-  #       uses: actions/github-script@v4
-  #       with:
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
-  #         script: |
-  #           const { data: workflowRuns } = await github.actions.listWorkflowRuns({
-  #             owner: context.repo.owner,
-  #             repo: context.repo.repo,
-  #             workflow_id: context.workflow,
-  #             branch: context.ref.replace('refs/heads/', '')
-  #           });
-
-  #           const latestRun = workflowRuns.workflow_runs.find(run => run.id === context.runId);
-  #           const nextRun = workflowRuns.workflow_runs.find(run => run.created_at > latestRun.created_at);
-
-  #           if (nextRun) {
-  #             await github.actions.createApproval({
-  #               owner: context.repo.owner,
-  #               repo: context.repo.repo,
-  #               run_id: nextRun.id
-  #             });
-  #           }
-
-  # production:
-  #   needs: [deploy, approval]
-  #   if: ${{ github.event.workflow_run.conclusion == 'success' && needs.approval.result == 'approved' }}
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-
-  #     - name: Production Code
-  #       run: |
-  #         echo "Production Code"
-  
   test-deployment:
     name: Make HTTP Call
     runs-on: ubuntu-latest
@@ -109,25 +66,18 @@ jobs:
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
           echo "response_code=$response" >> $GITHUB_OUTPUT
           
-      - name: Check response code
-        id: check_response
-        run: |
-          if [[ "${{ steps.http.outputs.response_code }}" == "200" ]]; then
-            echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
-            echo "rollback=true" >> $GITHUB_OUTPUT
-            echo "send_notification=true" >> $GITHUB_OUTPUT
-            echo ${{ steps.http.outputs.response_code }}
-          fi
-
-      # - name: Send Notification
-      #   if: steps.check_response.outputs.rollback == 'true'
+      # - name: Check response code
+      #   id: check_response
       #   run: |
-      #     # Replace this with the command to send a notification
-      #     echo "Sending notification because the HTTP response code is not 200"
-      #     echo "Sending notification "${{ steps.check_response.outputs.rollback }}"
-      
+      #     if [[ "${{ steps.http.outputs.response_code }}" == "200" ]]; then
+      #       echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
+      #       echo "rollback=true" >> $GITHUB_OUTPUT
+      #       echo "send_notification=true" >> $GITHUB_OUTPUT
+      #       echo ${{ steps.http.outputs.response_code }}
+      #     fi
+
       - name: Deploy to Azure Web App
-        if: steps.check_response.outputs.rollback == 'true'
+        if: steps.http.outputs.response_code == '200'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -135,25 +85,4 @@ jobs:
           slot-name: 'production'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
           # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
-          images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:6'
-
-  # rollback-job:
-  #   # name: Rollback Job
-  #   runs-on: ubuntu-latest
-  #   needs: test-deployment
-  #   environment:
-  #     name: 'development'
-  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
-  #   if: ${{ needs.test-deployment.check_response.outputs.rollback == 'true' }}
-
-  #   steps:
-  #     - name: Deploy to Azure Web App
-  #       id: deploy-to-webapp
-  #       uses: azure/webapps-deploy@v2
-  #       with:
-  #         app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
-  #         slot-name: 'production'
-  #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-  #         # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
-  #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:6'
+          images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:5'
