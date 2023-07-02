@@ -127,3 +127,28 @@ jobs:
     steps:
       - name: Deploy to Dev
         run: echo I am deploying!
+  
+  test-deployment:
+    name: Make HTTP Call
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Make HTTP request
+        id: http
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
+          echo "::set-output name=response_code::$response"
+
+      - name: Check response code
+        id: check_response
+        run: |
+          if [[ "${{ steps.http.outputs.response_code }}" != "200" ]]; then
+            echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
+            echo "::set-output name=send_notification::true"
+          fi
+
+      # - name: Send Notification
+      #   if: steps.check_response.outputs.send_notification == 'true'
+      #   run: |
+      #     # Replace this with the command to send a notification
+      #     echo "Sending notification because the HTTP response code is not 200"
