@@ -126,4 +126,4 @@ jobs:
       url: 'https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health'
     steps:
       - name: Deploy to Dev
-        run: echo I am deploying! 
+        run: echo I am deploying!
