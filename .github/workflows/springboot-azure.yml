@@ -130,6 +130,7 @@ jobs:
   
   test-deployment:
     name: Make HTTP Call
+    needs: [deploy]
     runs-on: ubuntu-latest
 
     steps:
@@ -142,9 +143,10 @@ jobs:
       - name: Check response code
         id: check_response
         run: |
-          if [[ "${{ steps.http.outputs.response_code }}" != "200" ]]; then
+          if [[ "${{ steps.http.outputs.response_code }}" == "200" ]]; then
             echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
             echo "::set-output name=send_notification::true"
+            echo ${{ steps.http.outputs.response_code }}
           fi
 
       # - name: Send Notification
@@ -152,3 +154,24 @@ jobs:
       #   run: |
       #     # Replace this with the command to send a notification
       #     echo "Sending notification because the HTTP response code is not 200"
+
+  rollback-job:
+    # name: Rollback Job
+    runs-on: ubuntu-latest
+    needs: test-deployment
+    environment:
+      name: 'development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    if: ${{ needs.test-deployment.outputs['check_response'] == 'true' }}
+
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+          # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
+          images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:6'
