@@ -22,18 +22,6 @@ jobs:
         run: |
           echo "Building Code"
 
-  deploy:
-    needs: build
-    name: Deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Deploy Code
-        run: |
-          echo "Deploying Code"
   # build:
   #   runs-on: ubuntu-latest
 
@@ -117,16 +105,18 @@ jobs:
   #     - name: Production Code
   #       run: |
   #         echo "Production Code"
-  DeployProd:
-    name: Deploy to Development 
-    needs: [deploy]
+  deploy:
+    needs: build
+    name: Deploy
     runs-on: ubuntu-latest
-    environment: 
-      name: test-deployment
-      url: 'https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health'
+
     steps:
-      - name: Deploy to Dev
-        run: echo I am deploying!
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy Code
+        run: |
+          echo "Deploying Code"
   
   test-deployment:
     name: Make HTTP Call
@@ -138,14 +128,14 @@ jobs:
         id: http
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
-          echo "::set-output name=response_code::$response"
-
+          echo "response_code=$response" >> $GITHUB_OUTPUT
+          
       - name: Check response code
         id: check_response
         run: |
           if [[ "${{ steps.http.outputs.response_code }}" == "200" ]]; then
             echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
-            echo "::set-output name=send_notification::true"
+            echo "send_notification=true" >> $GITHUB_OUTPUT
             echo ${{ steps.http.outputs.response_code }}
           fi
 
@@ -154,6 +144,19 @@ jobs:
       #   run: |
       #     # Replace this with the command to send a notification
       #     echo "Sending notification because the HTTP response code is not 200"
+
+  junk:
+    needs: test-deployment
+    name: junk
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy Code
+        run: |
+          echo ${{ needs.test-deployment.outputs['check_response'] == 'true' }}
 
   rollback-job:
     # name: Rollback Job
