@@ -116,11 +116,12 @@ jobs:
             echo ${{ steps.http.outputs.response_code }}
           fi
 
-      # - name: Send Notification
-      #   if: steps.check_response.outputs.send_notification == 'true'
-      #   run: |
-      #     # Replace this with the command to send a notification
-      #     echo "Sending notification because the HTTP response code is not 200"
+      - name: Send Notification
+        if: steps.check_response.outputs.rollback == 'true'
+        run: |
+          # Replace this with the command to send a notification
+          echo "Sending notification because the HTTP response code is not 200"
+          echo "Sending notification "${{ steps.check_response.outputs.rollback }}""
 
   junk:
     needs: test-deployment
