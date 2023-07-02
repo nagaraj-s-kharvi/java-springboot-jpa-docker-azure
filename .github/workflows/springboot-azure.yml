@@ -75,45 +75,55 @@ jobs:
   #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
   #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
   
-  approval:
-    needs: deploy
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  # approval:
+  #   needs: deploy
+  #   if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Create approval
+  #       id: approval
+  #       uses: actions/github-script@v4
+  #       with:
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         script: |
+  #           const { data: workflowRuns } = await github.actions.listWorkflowRuns({
+  #             owner: context.repo.owner,
+  #             repo: context.repo.repo,
+  #             workflow_id: context.workflow,
+  #             branch: context.ref.replace('refs/heads/', '')
+  #           });
+
+  #           const latestRun = workflowRuns.workflow_runs.find(run => run.id === context.runId);
+  #           const nextRun = workflowRuns.workflow_runs.find(run => run.created_at > latestRun.created_at);
+
+  #           if (nextRun) {
+  #             await github.actions.createApproval({
+  #               owner: context.repo.owner,
+  #               repo: context.repo.repo,
+  #               run_id: nextRun.id
+  #             });
+  #           }
+
+  # production:
+  #   needs: [deploy, approval]
+  #   if: ${{ github.event.workflow_run.conclusion == 'success' && needs.approval.result == 'approved' }}
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Production Code
+  #       run: |
+  #         echo "Production Code"
+  DeployProd:
+    name: Deploy to Development 
+    needs: [deploy]
     runs-on: ubuntu-latest
-
+    environment: 
+      name: development
+      url: 'https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health'
     steps:
-      - name: Create approval
-        id: approval
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { data: workflowRuns } = await github.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: context.workflow,
-              branch: context.ref.replace('refs/heads/', '')
-            });
-
-            const latestRun = workflowRuns.workflow_runs.find(run => run.id === context.runId);
-            const nextRun = workflowRuns.workflow_runs.find(run => run.created_at > latestRun.created_at);
-
-            if (nextRun) {
-              await github.actions.createApproval({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: nextRun.id
-              });
-            }
-
-  production:
-    needs: [deploy, approval]
-    if: ${{ github.event.workflow_run.conclusion == 'success' && needs.approval.result == 'approved' }}
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Production Code
-        run: |
-          echo "Production Code"
+      - name: Deploy to Dev
+        run: echo I am deploying! 
