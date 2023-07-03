@@ -96,19 +96,13 @@ jobs:
           NEW_VALUE=${{ github.run_number }}
           echo ${{ secrets.GITHUB_TOKEN }}
           echo ${{ github.repository }}
-
-          curl -X PATCH \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -d "{\"name\":\"$VARIABLE_NAME\", \"value\":\"$NEW_VALUE\"}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/$VARIABLE_NAME"
-
-
-          curl -L \
-            -X PUT \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \ 
-            -d '{"encrypted_value":"c2VjcmV0","key_id":"012345678912345678"}' \
-            "https://api.github.com/repos/${{ github.repository }}/actions/secrets/${VARIABLE_NAME}"
+          echo "STABLE_VERSION=1" >> $GITHUB_ENV
+          
+          # curl -L \
+          # -X PATCH \
+          # -H "Accept: application/vnd.github+json" \
+          # -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          # -H "X-GitHub-Api-Version: 2022-11-28" \
+          # https://api.github.com/repos/nagaraj-s-kharvi/java-springboot-jpa-docker-azure/actions/variables/STABLE_VERSION \
+          # -d '{"name":"STABLE_VERSION","value":"2"}'
             
