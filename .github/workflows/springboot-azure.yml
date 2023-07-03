@@ -84,8 +84,7 @@ jobs:
       #     app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
       #     slot-name: 'production'
       #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-      #     # images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
-      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:5'
+      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ env.STABLE_VERSION }}'
 
       - name: Update Variable
         if: steps.http.outputs.response_code == '200'
@@ -93,22 +92,22 @@ jobs:
         run: |
           # Define the variable name and new value
           VARIABLE_NAME="STABLE_VERSION"
-          NEW_VALUE=${{ github.run_number }}
+          VARIABLE_NEW_VALUE=${{ github.run_number }}
           echo ${{ secrets.GITHUB_TOKEN }}
           echo ${{ github.repository }}
           
           # curl -L \
           # -X PATCH \
           # -H "Accept: application/vnd.github+json" \
-          # -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          # -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
           # -H "X-GitHub-Api-Version: 2022-11-28" \
           # https://api.github.com/repos/nagaraj-s-kharvi/java-springboot-jpa-docker-azure/actions/variables/STABLE_VERSION \
-          # -d '{"name":"STABLE_VERSION","value":"2"}'
-          
+          # -d '{"name":"STABLE_VERSION","value":"1"}'
+
           curl -L \
           -X PATCH \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/nagaraj-s-kharvi/java-springboot-jpa-docker-azure/actions/variables/STABLE_VERSION \
-          -d '{"name":"STABLE_VERSION","value":"1"}'
+          https://api.github.com/repos/${{ github.repository }}/actions/variables/$VARIABLE_NAME \
+          -d '{"name":"$VARIABLE_NAME","value":"$VARIABLE_NEW_VALUE"}'
