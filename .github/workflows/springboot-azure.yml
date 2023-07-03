@@ -38,10 +38,10 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     needs: build
-    # strategy:
-    #   matrix:
-    #     environment: [development]
-    #     protection: [not-required]
+    strategy:
+      matrix:
+        environment: [development]
+        protection: [not-required]
     environment:
       name: 'development'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
