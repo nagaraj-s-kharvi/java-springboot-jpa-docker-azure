@@ -11,6 +11,18 @@ on:
 
 jobs:
 
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy Code
+        run: |
+          echo "Deploying Code"
+          
   # build:
   #   runs-on: ubuntu-latest
 
@@ -52,12 +64,16 @@ jobs:
   #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
   #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
   
-  test-deployment:
+  test-dev-deployment:
     name: Make HTTP Call
     runs-on: ubuntu-latest
-    environment:
-      name: 'development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    strategy:
+      matrix:
+        environment: [development]
+        protection: [not-required]
+    # environment:
+    #   name: 'development'
+    #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Make HTTP request
@@ -65,44 +81,23 @@ jobs:
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
           echo "response_code=$response" >> $GITHUB_OUTPUT
-          
-      # - name: Check response code
-      #   id: check_response
-      #   run: |
-      #     if [[ "${{ steps.http.outputs.response_code }}" == "200" ]]; then
-      #       echo "HTTP request failed with response code ${{ steps.http.outputs.response_code }}"
-      #       echo "rollback=true" >> $GITHUB_OUTPUT
-      #       echo "send_notification=true" >> $GITHUB_OUTPUT
-      #       echo ${{ steps.http.outputs.response_code }}
-      #     fi
 
-      # - name: Deploy to Azure Web App
-      #   if: steps.http.outputs.response_code != '200'
-      #   id: deploy-to-webapp
-      #   uses: azure/webapps-deploy@v2
-      #   with:
-      #     app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
-      #     slot-name: 'production'
-      #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ env.STABLE_VERSION }}'
+      - name: Deploy to Azure Web App
+        if: steps.http.outputs.response_code != '200'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+          images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ env.STABLE_VERSION }}'
 
-      - name: Update Variable
+      - name: Update Variable STABLE_VERSION
         if: steps.http.outputs.response_code == '200'
         id: update_variable
         run: |
-          # Define the variable name and new value
           VARIABLE_NAME="STABLE_VERSION"
           VARIABLE_NEW_VALUE=${{ github.run_number }}
-          echo ${{ secrets.GITHUB_TOKEN }}
-          echo ${{ github.repository }}
-          
-          # curl -L \
-          # -X PATCH \
-          # -H "Accept: application/vnd.github+json" \
-          # -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
-          # -H "X-GitHub-Api-Version: 2022-11-28" \
-          # https://api.github.com/repos/nagaraj-s-kharvi/java-springboot-jpa-docker-azure/actions/variables/STABLE_VERSION \
-          # -d '{"name":"STABLE_VERSION","value":"1"}'
 
           curl -L \
           -X PATCH \
