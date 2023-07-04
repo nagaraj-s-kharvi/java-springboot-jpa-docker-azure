@@ -13,13 +13,13 @@ jobs:
 
   deploy-dev:
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     environment: [development]
-    #     protection: [not-required]
-    environment:
-      name: 'development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    strategy:
+      matrix:
+        environment: [development]
+        protection: [not-required]
+    # environment:
+    #   name: 'development'
+    #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Azure Login
@@ -34,7 +34,7 @@ jobs:
       #     app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
       #     slot-name: 'production'
       #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
+      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:47'
   
   # deploy-dev-test:
   #   name: Make HTTP Call
