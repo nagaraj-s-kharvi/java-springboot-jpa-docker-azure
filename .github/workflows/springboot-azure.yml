@@ -64,7 +64,9 @@ jobs:
       - name: Make HTTPS request
         id: http
         run: |
-          echo ${{ env.APP_HEALTH_API }}
+          echo "${{ env.APP_HEALTH_API }}"
+          echo "${{ env.AZURE_APP_SERVICE_NAME }}"
+          echo "${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}"
           response=$(curl -s -o /dev/null -w "%{http_code}" ${{ env.APP_HEALTH_API }})
           echo "response_code=$response" >> $GITHUB_OUTPUT
 
