@@ -6,7 +6,7 @@ name: Build and deploy container app to Azure Web App
 on:
   push:
     branches:
-      - master
+      - original
   workflow_dispatch:
 
 jobs:
@@ -47,11 +47,6 @@ jobs:
     #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -67,7 +62,7 @@ jobs:
     needs: deploy-dev
     environment:
         name: 'development'
-        # url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Make HTTP request
