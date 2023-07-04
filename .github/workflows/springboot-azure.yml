@@ -6,7 +6,7 @@ name: Build and deploy container app to Azure Web App
 on:
   push:
     branches:
-      - master
+      - original
   workflow_dispatch:
 
 jobs:
@@ -53,19 +53,19 @@ jobs:
   #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ github.run_number }}'
   
   dev-test:
-    name: Dev Env Health Check
+    name: dev env health check
     runs-on: ubuntu-latest
     # needs: deploy-dev
     environment:
-        name: 'development-staging'
-        url: ${{ env.APP_HEALTH_API }}
+        name: 'dev-test'
+        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Make HTTPS request
         id: http
         run: |
-          echo ${{ env.APP_HEALTH_API }}
           echo ${{ env.AZURE_APP_SERVICE_NAME }}
+          echo ${{ env.APP_HEALTH_API }}
           echo ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
           echo "response_code=$response" >> $GITHUB_OUTPUT
