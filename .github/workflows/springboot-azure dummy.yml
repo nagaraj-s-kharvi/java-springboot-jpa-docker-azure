@@ -15,13 +15,21 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-    #     environment: [development]
+        environment: [development]
         protection: [not-required]
-    environment:
-      name: 'development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    # environment:
+    #   name: 'development'
+    #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build Code
+        run: |
+          echo "Building Code"
+          echo ${{ env.AZURE_APP_SERVICE_NAME }}
+
       - name: Azure Login
         uses: azure/login@v1
         with:
