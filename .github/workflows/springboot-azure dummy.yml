@@ -29,10 +29,10 @@ jobs:
         run: |
           echo "Building Code"
 
-      # - name: Azure Login
-      #   uses: azure/login@v1
-      #   with:
-      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # - name: Deploy to Azure Web App
       #   id: deploy-to-webapp
