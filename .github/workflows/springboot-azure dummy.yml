@@ -17,9 +17,9 @@ jobs:
       matrix:
         environment: [development]
         protection: [not-required]
-    # environment:
-    #   name: 'development'
-    #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    environment:
+      name: 'development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Checkout repository
