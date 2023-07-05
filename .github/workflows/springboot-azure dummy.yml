@@ -30,7 +30,8 @@ jobs:
             https://api.github.com/repositories/${{ github.repository_id }}/environments/$ENVIRONMENT_NAME/variables/$VARIABLE_NAME
           )
           VARIABLE_VALUE=$(echo $response | jq -r ".$VARIABLE_KEY")
-          # echo "VARIABLE_VALUE=$VARIABLE_VALUE" >> $GITHUB_OUTPUT
+          echo "VARIABLE_VALUE=$VARIABLE_VALUE" >> $GITHUB_OUTPUT
+          echo $VARIABLE_VALUE
 
           # curl -L \
           # -H "Accept: application/vnd.github+json" \
