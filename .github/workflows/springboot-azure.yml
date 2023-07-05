@@ -57,10 +57,10 @@ jobs:
       # needs: build
       strategy:
         matrix:
-          environment: [development]
+          # environment: [development]
           protection: [not-required]
-      # environment:
-      #   name: 'development'
+      environment:
+        name: 'development'
       #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
   
       steps:
