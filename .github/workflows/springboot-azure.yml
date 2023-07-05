@@ -65,14 +65,14 @@ jobs:
         id: http
         run: |
           echo ${{ env.AZURE_APP_SERVICE_NAME }}
-          if [[ -n "$AZURE_APP_SERVICE_NAME" ]]; then
-            echo "Environment variable is not null: $AZURE_APP_SERVICE_NAME"
+          echo "${{ env.AZURE_APP_SERVICE_NAME }}"
+          if [[ -n "${{ env.AZURE_APP_SERVICE_NAME }}" ]]; then
+            echo "Environment variable is not null: ${{ env.AZURE_APP_SERVICE_NAME }}"
           else
             echo "Environment variable is null"
           fi
-          echo $AZURE_APP_SERVICE_NAME
-          echo ${{ env.APP_HEALTH_API }}
-          echo ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+          echo "${{ env.APP_HEALTH_API }}"
+          echo "${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}"
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
           echo "response_code=$response" >> $GITHUB_OUTPUT
 
