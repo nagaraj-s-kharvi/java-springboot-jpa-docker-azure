@@ -76,6 +76,7 @@ jobs:
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
           echo "response_code=$response" >> $GITHUB_OUTPUT
           echo $response_code
+          echo "$response_code"
 
   #     - name: Deploy to Azure Web App
   #       if: steps.http.outputs.response_code != '200'
