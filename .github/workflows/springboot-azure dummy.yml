@@ -6,16 +6,16 @@ name: Test
 on:
   push:
     branches:
-      - dummy
+      - master
   workflow_dispatch:
 
 jobs:
 
   deploy-dev:
     runs-on: ubuntu-latest
-    # environment:
-    #   name: 'development'
-    #   url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    environment:
+      name: 'development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Checkout repository
@@ -26,10 +26,10 @@ jobs:
           echo "Building Code"
           echo ${{ env.AZURE_APP_SERVICE_NAME }}
 
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      # - name: Azure Login
+      #   uses: azure/login@v1
+      #   with:
+      #     creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       # - name: Deploy to Azure Web App
       #   id: deploy-to-webapp
