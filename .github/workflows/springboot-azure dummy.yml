@@ -24,7 +24,7 @@ jobs:
       - name: Build Code
         run: |
           echo "Building Code"
-          echo ${{ env.AZURE_APP_SERVICE_NAME }}
+          echo ${{ vars.AZURE_APP_SERVICE_NAME }}
 
       # - name: Azure Login
       #   uses: azure/login@v1
