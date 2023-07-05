@@ -63,6 +63,7 @@ jobs:
           protection: [not-required]
   
       steps:
+        - uses: actions/checkout@v2
         - name: Fetch values
           id: fetch
           uses: ./.github/workflows/fetch-variable-value.yml
