@@ -29,10 +29,8 @@ jobs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repositories/${{ github.repository_id }}/environments/$ENVIRONMENT_NAME/variables/$VARIABLE_NAME
           )
-          echo "Success: $response "
           VARIABLE_VALUE=$(echo $response | jq -r ".$VARIABLE_KEY")
-          echo $VARIABLE_VALUE
-          # echo "response_code=$response" >> $GITHUB_OUTPUT
+          # echo "VARIABLE_VALUE=$VARIABLE_VALUE" >> $GITHUB_OUTPUT
 
           # curl -L \
           # -H "Accept: application/vnd.github+json" \
