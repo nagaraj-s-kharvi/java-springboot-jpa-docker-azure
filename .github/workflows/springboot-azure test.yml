@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy container app to Azure Web App
+name: Test Build and deploy container app to Azure Web App
 
 on:
   push:
@@ -75,9 +75,10 @@ jobs:
           echo "${{ vars.APP_HEALTH_API }}"
           response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
           echo "response_code=$response" >> $GITHUB_OUTPUT
+          echo $response_code
 
       - name: Deploy to Azure Web App
-        if: steps.http.outputs.response_code != '200'
+        if: steps.http.outputs.response_code == '200'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -87,7 +88,7 @@ jobs:
           images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
 
       - name: Update Variable STABLE_VERSION
-        if: steps.http.outputs.response_code == '200'
+        if: steps.http.outputs.response_code != '200'
         id: update_variable
         run: |
           VARIABLE_NAME="STABLE_VERSION"
