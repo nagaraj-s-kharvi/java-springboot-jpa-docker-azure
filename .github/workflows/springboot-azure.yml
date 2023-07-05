@@ -63,59 +63,67 @@ jobs:
           protection: [not-required]
   
       steps:
-        - name: Deploy to Azure Web App
-          id: deploy-to-webapp
-          uses: azure/webapps-deploy@v2
+        - name: Fetch values
+          id: fetch
+          uses: ./.github/workflows/fetch-variable-value.yml
           with:
-            app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
-            slot-name: 'production'
-            publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-            images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
+            ENVIRONMENT_NAME: development
+            VARIABLE_NAME: AZURE_APP_SERVICE_NAME
+            VARIABLE_KEY: value
+
+        # - name: Deploy to Azure Web App
+        #   id: deploy-to-webapp
+        #   uses: azure/webapps-deploy@v2
+        #   with:
+        #     app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
+        #     slot-name: 'production'
+        #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+        #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
   
-  dev-test:
-    name: dev env health check
-    runs-on: ubuntu-latest
-    # needs: deploy-dev
-    environment:
-        name: 'development'
-        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  # dev-test:
+  #   name: dev env health check
+  #   runs-on: ubuntu-latest
+  #   # needs: deploy-dev
+  #   environment:
+  #       name: 'development'
+  #       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-    steps:
-      - name: Make HTTPS request
-        id: http
-        run: |
-          echo ${{ vars.AZURE_APP_SERVICE_NAME }}
-          echo "${{ vars.AZURE_APP_SERVICE_NAME }}"
-          if [[ -n "${{ vars.AZURE_APP_SERVICE_NAME }}" ]]; then
-            echo "Environment variable is not null: ${{ vars.AZURE_APP_SERVICE_NAME }}"
-          else
-            echo "Environment variable is null"
-          fi
-          echo "${{ vars.APP_HEALTH_API }}"
-          response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
-          echo "response_code=$response" >> $GITHUB_OUTPUT
+  #   steps:
+  #     - name: Make HTTPS request
+  #       id: http
+  #       run: |
+  #         echo ${{ vars.AZURE_APP_SERVICE_NAME }}
+  #         echo "${{ vars.AZURE_APP_SERVICE_NAME }}"
+  #         if [[ -n "${{ vars.AZURE_APP_SERVICE_NAME }}" ]]; then
+  #           echo "Environment variable is not null: ${{ vars.AZURE_APP_SERVICE_NAME }}"
+  #         else
+  #           echo "Environment variable is null"
+  #         fi
+  #         echo "${{ vars.APP_HEALTH_API }}"
+  #         response=$(curl -s -o /dev/null -w "%{http_code}" https://java-springboot-jpa-docker-azure-dev.azurewebsites.net/actuator/health)
+  #         echo "response_code=$response" >> $GITHUB_OUTPUT
 
-      - name: Deploy to Azure Web App
-        if: steps.http.outputs.response_code != '200'
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-          images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
+  #     - name: Deploy to Azure Web App
+  #       if: steps.http.outputs.response_code != '200'
+  #       id: deploy-to-webapp
+  #       uses: azure/webapps-deploy@v2
+  #       with:
+  #         app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
+  #         slot-name: 'production'
+  #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+  #         images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
 
-      - name: Update Variable STABLE_VERSION
-        if: steps.http.outputs.response_code == '200'
-        id: update_variable
-        run: |
-          VARIABLE_NAME="STABLE_VERSION"
-          VARIABLE_NEW_VALUE=${{ github.run_number }}
+  #     - name: Update Variable STABLE_VERSION
+  #       if: steps.http.outputs.response_code == '200'
+  #       id: update_variable
+  #       run: |
+  #         VARIABLE_NAME="STABLE_VERSION"
+  #         VARIABLE_NEW_VALUE=${{ github.run_number }}
 
-          curl -L \
-          -X PATCH \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "https://api.github.com/repos/${{ github.repository }}/actions/variables/$VARIABLE_NAME" \
-          -d "{\"name\":\"$VARIABLE_NAME\",\"value\":\"$VARIABLE_NEW_VALUE\"}"  
+  #         curl -L \
+  #         -X PATCH \
+  #         -H "Accept: application/vnd.github+json" \
+  #         -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
+  #         -H "X-GitHub-Api-Version: 2022-11-28" \
+  #         "https://api.github.com/repos/${{ github.repository }}/actions/variables/$VARIABLE_NAME" \
+  #         -d "{\"name\":\"$VARIABLE_NAME\",\"value\":\"$VARIABLE_NEW_VALUE\"}"  

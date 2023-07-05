@@ -1,14 +1,20 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Test
+name: Fetch Environment Variable from Repository
 
 on:
-  push:
-    branches:
-      - master1
-  workflow_dispatch:
-
+  workflow_call:
+    inputs:
+      ENVIRONMENT_NAME:
+        required: true
+        type: string
+      VARIABLE_NAME:
+        required: true
+        type: string
+      VARIABLE_KEY:
+        required: true
+        type: string
 
 jobs:
   fetch_variable:
@@ -18,9 +24,9 @@ jobs:
       - name: Fetch Variable Value
         id: fetch
         run: |
-          ENVIRONMENT_NAME="development"
-          VARIABLE_NAME="AZURE_APP_SERVICE_NAME"
-          VARIABLE_KEY="value"
+          # ENVIRONMENT_NAME="development"
+          # VARIABLE_NAME="AZURE_APP_SERVICE_NAME"
+          # VARIABLE_KEY="value"
 
           response=$(
             curl -L \
