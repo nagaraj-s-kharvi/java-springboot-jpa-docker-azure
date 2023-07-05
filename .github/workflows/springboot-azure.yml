@@ -66,7 +66,7 @@ jobs:
         
         - name: Fetch values
           id: fetch
-          uses: nagaraj-s-kharvi/java-springboot-jpa-docker-azure/.github/workflows/fetch-variable-value.yml
+          uses: nagaraj-s-kharvi/java-springboot-jpa-docker-azure/.github/workflows/fetch-variable-value.yml@master
           with:
             ENVIRONMENT_NAME: development
             VARIABLE_NAME: AZURE_APP_SERVICE_NAME
