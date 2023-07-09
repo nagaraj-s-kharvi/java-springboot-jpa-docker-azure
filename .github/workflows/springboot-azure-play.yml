@@ -9,6 +9,9 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  DEV_URL
+
 jobs:
 
   # build:
@@ -48,12 +51,13 @@ jobs:
         run: |
           # echo ${{ steps.deploy-to-webapp.outputs.webapp-url }}
           # echo "${{ steps.deploy-to-webapp.outputs.webapp-url }}"
-          # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+          echo "DEV_URL1=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
           echo "1 Working"
           echo ${DEV_URL}
           echo "2 Working"
-        env:
-          DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+        # env:
+        #   DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
   dev-deployment-test:
     name: dev app status check
@@ -68,6 +72,8 @@ jobs:
         id: http
         run: |
           echo ${{ needs.dev-deployment.outputs.environment_url }}
+          echo ${{ needs.dev-deployment.outputs.environment_url }}
+          
           response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
           echo "$RESPONSE_HTTP_CODE"
