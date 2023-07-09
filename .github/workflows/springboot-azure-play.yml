@@ -50,7 +50,7 @@ jobs:
           # echo "${{ steps.deploy-to-webapp.outputs.webapp-url }}"
           # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
           echo "1 Working"
-          echo ${ DEV_URL }
+          echo ${DEV_URL}
           echo "2 Working"
         env:
           DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
@@ -61,17 +61,17 @@ jobs:
     needs: dev-deployment
     environment:
         name: 'dev-test'
-        url: ${ DEV_URL }
+        url: ${DEV_URL}
 
     steps:
       - name: Make HTTPS request
         id: http
         run: |
-          echo ${ DEV_URL }
+          echo ${{ needs.dev-deployment.outputs.environment_url }}
           response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
           echo "$RESPONSE_HTTP_CODE"
-          echo ${ DEV_URL }
+          echo ${DEV_URL}
           echo "${{ env.URL }}"
 
       # - name: Deploy to Azure Web App
