@@ -27,38 +27,39 @@ jobs:
   #         username: ${{ vars.REGISTRY_USERNAME }}
   #         password: ${{ secrets.REGISTRY_TOKEN }}
 
-  # dev-deployment:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   environment:
-  #     name: 'development'
-  #     url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  dev-deployment:
+    runs-on: ubuntu-latest
+    # needs: build
+    environment:
+      name: 'development'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-  #   steps:
-  #     - name: Deploy to Azure Web App
-  #       id: deploy-to-webapp
-  #       uses: azure/webapps-deploy@v2
-  #       with:
-  #         app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
-  #         slot-name: 'production'
-  #         publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-  #         images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:56'
+    steps:
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+          images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:56'
 
   dev-deployment-test:
     name: dev app status check
     runs-on: ubuntu-latest
-    # needs: dev-deployment
+    needs: dev-deployment
     environment:
         name: 'dev-test'
-        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+        url: ${{ needs.dev-deployment.outputs.environment_url }}
 
     steps:
       - name: Make HTTPS request
         id: http
         run: |
+          echo ${{ needs.dev-deployment.outputs.environment_url }}
           response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
-          echo $RESPONSE_HTTP_CODE
+          echo ${{ env.RESPONSE_HTTP_CODE }}
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
