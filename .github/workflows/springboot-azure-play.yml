@@ -33,7 +33,7 @@ jobs:
   dev-deployment:
     runs-on: ubuntu-latest
     outputs:
-      DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      DEV_URL: "${{ steps.deploy-to-webapp.outputs.webapp-url }}/actuator/health"
       AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
     # needs: build
     environment:
@@ -73,11 +73,14 @@ jobs:
           echo $DEV_URL
           echo ${DEV_URL}
           echo ${{env.DEV_URL}}
-          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.DEV_URL }}/actuator/health")
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.DEV_URL }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
+          echo $DEV_URL
           echo ${DEV_URL}
-          echo "${{ env.URL }}"
-          echo "${{ env.AZURE_APP_SERVICE_NAME }}"
+          echo ${{env.DEV_URL}}
+          echo "$env.AZURE_APP_SERVICE_NAME"
+          echo "${env.AZURE_APP_SERVICE_NAME}"
+          echo "${{env.AZURE_APP_SERVICE_NAME}}"
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
