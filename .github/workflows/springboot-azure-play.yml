@@ -49,11 +49,11 @@ jobs:
       - name: Set Environment Variable
         run: |
           
-          # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
-          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
+          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+          # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
           echo "1 Working"
           echo ${DEV_URL}
-          echo ${{env.DEV_URL}}
+          echo $DEV_URL
           echo "2 Working"
     
   dev-deployment-test:
