@@ -75,9 +75,9 @@ jobs:
           echo $AZURE_APP_SERVICE_NAME
           echo ${AZURE_APP_SERVICE_NAME}
           echo ${{env.AZURE_APP_SERVICE_NAME}}
-          echo $AZURE_APP_SERVICE_UI_PUBLISH_PROFILE
-          echo ${AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}
-          echo ${{env.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}}
+          # echo $AZURE_APP_SERVICE_UI_PUBLISH_PROFILE
+          # echo ${AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}
+          # echo ${{env.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}}
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
