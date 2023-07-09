@@ -35,6 +35,8 @@ jobs:
     outputs:
       DEV_URL: "${{ steps.deploy-to-webapp.outputs.webapp-url }}/actuator/health"
       AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
+      AZURE_APP_SERVICE_UI_PUBLISH_PROFILE: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+
     # needs: build
     environment:
       name: 'development'
@@ -56,7 +58,7 @@ jobs:
     needs: dev-deployment
     environment:
       name: 'dev-test'
-      url: ${{env.DEV_URL}}
+      # url: ${{env.DEV_URL}}
 
     steps:
       - name: Make HTTPS request
@@ -73,6 +75,9 @@ jobs:
           echo $AZURE_APP_SERVICE_NAME
           echo ${AZURE_APP_SERVICE_NAME}
           echo ${{env.AZURE_APP_SERVICE_NAME}}
+          echo $AZURE_APP_SERVICE_UI_PUBLISH_PROFILE
+          echo ${AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}
+          echo ${{env.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}}
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
