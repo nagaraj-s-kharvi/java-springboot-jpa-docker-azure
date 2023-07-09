@@ -57,13 +57,12 @@ jobs:
     needs: dev-deployment
     environment:
       name: 'dev-test'
-      # url: ${{env.DEV_URL}}
+      url: ${{needs.dev-deployment.outputs.DEV_URL}}
 
     steps:
       - name: Make HTTPS request
         env:
-          # DEV_URL: ${{needs.dev-deployment.outputs.DEV_URL}}
-          DEV_URL: ${{needs.dev-deployment.steps.deploy-to-webapp.outputs.webapp-url}}
+          DEV_URL: ${{needs.dev-deployment.outputs.DEV_URL}}
           AZURE_APP_SERVICE_NAME: ${{needs.dev-deployment.outputs.AZURE_APP_SERVICE_NAME}}
         id: http
         run: |
