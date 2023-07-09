@@ -48,16 +48,12 @@ jobs:
         run: |
           # echo ${{ steps.deploy-to-webapp.outputs.webapp-url }}
           # echo "${{ steps.deploy-to-webapp.outputs.webapp-url }}"
-          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
-          echo "${DEV_URL}"
-          echo ${DEV_URL}
-          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
-          echo "${DEV_URL}"
-          echo ${DEV_URL}
-          echo ${STEP1_OUTPUT}
-
+          # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+          echo "1 Working"
+          echo ${ DEV_URL }
+          echo "2 Working"
         env:
-          STEP1_OUTPUT: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+          DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
   dev-deployment-test:
     name: dev app status check
@@ -65,17 +61,17 @@ jobs:
     needs: dev-deployment
     environment:
         name: 'dev-test'
-        url: ${{ env.URL }}
+        url: ${ DEV_URL }
 
     steps:
       - name: Make HTTPS request
         id: http
         run: |
-          echo ${{ needs.dev-deployment.outputs.environment_url }}
+          echo ${ DEV_URL }
           response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
           echo "$RESPONSE_HTTP_CODE"
-          echo ${{ env.URL }}
+          echo ${ DEV_URL }
           echo "${{ env.URL }}"
 
       # - name: Deploy to Azure Web App
