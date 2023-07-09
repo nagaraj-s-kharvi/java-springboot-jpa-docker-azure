@@ -49,11 +49,13 @@ jobs:
           # echo ${{ steps.deploy-to-webapp.outputs.webapp-url }}
           # echo "${{ steps.deploy-to-webapp.outputs.webapp-url }}"
           echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
-          echo "$DEV_URL"
-          echo $DEV_URL
+          echo "${DEV_URL}"
+          echo ${DEV_URL}
           echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
-          echo "$DEV_URL"
-          echo $DEV_URL
+          echo "${DEV_URL}"
+          echo ${DEV_URL}
+        # env:
+        #   STEP1_OUTPUT: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
   dev-deployment-test:
     name: dev app status check
