@@ -61,9 +61,9 @@ jobs:
 
     steps:
       - name: Make HTTPS request
-        # env:
-        #   DEV_URL: ${{needs.dev-deployment.outputs.DEV_URL}}
-        #   AZURE_APP_SERVICE_NAME: ${{needs.dev-deployment.outputs.AZURE_APP_SERVICE_NAME}}
+        env:
+          DEV_URL: ${{needs.dev-deployment.outputs.DEV_URL}}
+          AZURE_APP_SERVICE_NAME: ${{needs.dev-deployment.outputs.AZURE_APP_SERVICE_NAME}}
         id: http
         run: |
           echo $DEV_URL
@@ -83,7 +83,7 @@ jobs:
           app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
           slot-name: 'production'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-          images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
+          images: '${{env.DOCKER_IMAGE}}:${{ vars.STABLE_VERSION }}'
 
       - name: Update Variable STABLE_VERSION
         if: ${{ env.RESPONSE_HTTP_CODE == '200' }}
