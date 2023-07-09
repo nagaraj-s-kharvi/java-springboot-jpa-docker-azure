@@ -6,7 +6,7 @@ name: Fetch Variable
 on:
   push:
     branches:
-      - master
+      - master1
   workflow_dispatch:
 
 
@@ -25,7 +25,7 @@ jobs:
           response=$(
             curl -L \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.API_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repositories/${{ github.repository_id }}/environments/$ENVIRONMENT_NAME/variables/$VARIABLE_NAME
           )
