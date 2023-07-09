@@ -43,6 +43,11 @@ jobs:
           slot-name: 'production'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
           images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:56'
+    
+      - name: Set Environment Variable
+        run: |
+          echo "URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+          echo $URL
 
   dev-deployment-test:
     name: dev app status check
@@ -60,6 +65,9 @@ jobs:
           response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
           echo ${{ env.RESPONSE_HTTP_CODE }}
+          echo "${{ env.RESPONSE_HTTP_CODE }}"
+          echo "$RESPONSE_HTTP_CODE"
+          echo ${{ env.URL }}
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
