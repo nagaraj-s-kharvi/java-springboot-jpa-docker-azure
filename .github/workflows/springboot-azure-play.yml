@@ -9,6 +9,9 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  DOCKER_IMAGE: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}'
+  
 jobs:
 
   # build:
@@ -31,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
     # needs: build
     environment:
       name: 'development'
@@ -48,13 +52,9 @@ jobs:
     
       - name: Set Environment Variable
         run: |
-          
           echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
           # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
-          echo "1 Working"
-          echo ${DEV_URL}
-          echo $DEV_URL
-          echo "2 Working"
+          # echo "AZURE_APP_SERVICE_NAME= ${{ vars.AZURE_APP_SERVICE_NAME }}" >> $GITHUB_ENV
     
   dev-deployment-test:
     name: dev app status check
@@ -73,11 +73,11 @@ jobs:
           echo $DEV_URL
           echo ${DEV_URL}
           echo ${{env.DEV_URL}}
-          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.DEV_URL }}/actuator/health")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
-          echo "$RESPONSE_HTTP_CODE"
           echo ${DEV_URL}
           echo "${{ env.URL }}"
+          echo "${{ env.AZURE_APP_SERVICE_NAME }}"
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
