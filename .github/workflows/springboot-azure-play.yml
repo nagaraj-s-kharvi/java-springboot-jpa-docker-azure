@@ -50,11 +50,11 @@ jobs:
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
           images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:56'
     
-      - name: Set Environment Variable
-        run: |
-          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
-          # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
-          # echo "AZURE_APP_SERVICE_NAME= ${{ vars.AZURE_APP_SERVICE_NAME }}" >> $GITHUB_ENV
+      # - name: Set Environment Variable
+      #   run: |
+      #     echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+      #     # echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
+      #     # echo "AZURE_APP_SERVICE_NAME= ${{ vars.AZURE_APP_SERVICE_NAME }}" >> $GITHUB_ENV
     
   dev-deployment-test:
     name: dev app status check
