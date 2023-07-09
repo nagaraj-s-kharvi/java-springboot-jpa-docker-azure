@@ -54,8 +54,10 @@ jobs:
           echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
           echo "${DEV_URL}"
           echo ${DEV_URL}
-        # env:
-        #   STEP1_OUTPUT: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+          echo ${STEP1_OUTPUT}
+
+        env:
+          STEP1_OUTPUT: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
   dev-deployment-test:
     name: dev app status check
@@ -84,7 +86,7 @@ jobs:
       #     app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
       #     slot-name: 'production'
       #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-      #     images: '${{ secrets.REGISTRY_SOURCE }}/${{ secrets.REGISTRY_USERNAME }}/${{ secrets.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
+      #     images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
 
       - name: Update Variable STABLE_VERSION
         if: ${{ env.RESPONSE_HTTP_CODE == '200' }}
