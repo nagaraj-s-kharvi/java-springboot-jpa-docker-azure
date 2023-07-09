@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  DEV_URL
+  DEV_URL:
 
 jobs:
 
