@@ -35,7 +35,6 @@ jobs:
     outputs:
       DEV_URL: "${{ steps.deploy-to-webapp.outputs.webapp-url }}/actuator/health"
       AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
-      AZURE_APP_SERVICE_UI_PUBLISH_PROFILE: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
 
     # needs: build
     environment:
@@ -50,7 +49,7 @@ jobs:
           app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
           slot-name: 'production'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-          images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:56'
+          images: '$DOCKER_IMAGE:48'
     
   dev-deployment-test:
     name: dev app status check
@@ -75,19 +74,16 @@ jobs:
           echo $AZURE_APP_SERVICE_NAME
           echo ${AZURE_APP_SERVICE_NAME}
           echo ${{env.AZURE_APP_SERVICE_NAME}}
-          # echo $AZURE_APP_SERVICE_UI_PUBLISH_PROFILE
-          # echo ${AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}
-          # echo ${{env.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE}}
 
-      # - name: Deploy to Azure Web App
-      #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
-      #   id: deploy-to-webapp
-      #   uses: azure/webapps-deploy@v2
-      #   with:
-      #     app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
-      #     slot-name: 'production'
-      #     publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
-      #     images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
+      - name: Deploy to Azure Web App
+        if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
+          images: '${{ vars.REGISTRY_SOURCE }}/${{ vars.REGISTRY_USERNAME }}/${{ vars.REGISTRY_IMAGE }}:${{ vars.STABLE_VERSION }}'
 
       - name: Update Variable STABLE_VERSION
         if: ${{ env.RESPONSE_HTTP_CODE == '200' }}
