@@ -6,7 +6,7 @@ name: Test
 on:
   push:
     branches:
-      - master
+      - master1
   workflow_dispatch:
 
 env:
@@ -75,7 +75,7 @@ jobs:
           echo ${{env.AZURE_APP_SERVICE_NAME}}
 
       - name: Deploy to Azure Web App
-        if: ${{ env.RESPONSE_HTTP_CODE == '200' }}
+        if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
@@ -86,7 +86,7 @@ jobs:
           images: '${{env.DOCKER_IMAGE}}:45'
 
       - name: Update Variable STABLE_VERSION
-        if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
+        if: ${{ env.RESPONSE_HTTP_CODE == '200' }}
         id: update_variable
         run: |
           VARIABLE_NAME="STABLE_VERSION"
