@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.data</groupId>
 	<artifactId>java-springboot-jpa-docker-azure</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>java-springboot-jpa-docker-azure</name>
 	<description>Spring Boot Project for connecting to DB</description>
 	<properties>

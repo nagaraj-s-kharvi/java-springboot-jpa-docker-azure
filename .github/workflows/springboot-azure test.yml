@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     outputs:
-      DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      DEV_URL: ${{ steps.deploy-to-webapp.outputs.webapp-url }}/actuator/health
       AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
     environment:
       name: 'development'
