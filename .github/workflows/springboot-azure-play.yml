@@ -35,7 +35,6 @@ jobs:
     outputs:
       DEV_URL: "${{ steps.deploy-to-webapp.outputs.webapp-url }}/actuator/health"
       AZURE_APP_SERVICE_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
-
     # needs: build
     environment:
       name: 'development'
@@ -55,15 +54,15 @@ jobs:
     name: dev app status check
     runs-on: ubuntu-latest
     needs: dev-deployment
+    env:
+      DEV_URL: ${{needs.dev-deployment.outputs.DEV_URL}}
+      AZURE_APP_SERVICE_NAME: ${{needs.dev-deployment.outputs.AZURE_APP_SERVICE_NAME}}
     environment:
       name: 'dev-test'
       url: ${{needs.dev-deployment.outputs.DEV_URL}}
 
     steps:
       - name: Make HTTPS request
-        env:
-          DEV_URL: ${{needs.dev-deployment.outputs.DEV_URL}}
-          AZURE_APP_SERVICE_NAME: ${{needs.dev-deployment.outputs.AZURE_APP_SERVICE_NAME}}
         id: http
         run: |
           echo $DEV_URL
@@ -80,7 +79,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ vars.AZURE_APP_SERVICE_NAME }}
+          app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
           slot-name: 'production'
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_UI_PUBLISH_PROFILE }}
           images: '${{env.DOCKER_IMAGE}}:${{ vars.STABLE_VERSION }}'
