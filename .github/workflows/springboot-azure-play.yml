@@ -78,9 +78,9 @@ jobs:
           echo $DEV_URL
           echo ${DEV_URL}
           echo ${{env.DEV_URL}}
-          echo "$env.AZURE_APP_SERVICE_NAME"
-          echo "${env.AZURE_APP_SERVICE_NAME}"
-          echo "${{env.AZURE_APP_SERVICE_NAME}}"
+          echo $AZURE_APP_SERVICE_NAME
+          echo ${AZURE_APP_SERVICE_NAME}
+          echo ${{env.AZURE_APP_SERVICE_NAME}}
 
       # - name: Deploy to Azure Web App
       #   if: ${{ env.RESPONSE_HTTP_CODE != '200' }}
