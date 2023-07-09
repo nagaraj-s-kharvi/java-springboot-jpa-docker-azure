@@ -59,7 +59,7 @@ jobs:
           images: '${{env.DOCKER_IMAGE}}:${{ github.run_number }}'
 
   dev-deployment-test:
-    name: dev app status check
+    name: dev-app-status-check
     runs-on: ubuntu-latest
     needs: dev-deployment
     env:
