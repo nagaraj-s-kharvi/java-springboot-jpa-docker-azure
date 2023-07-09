@@ -46,12 +46,17 @@ jobs:
     
       - name: Set Environment Variable
         run: |
-          echo ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-          echo "${{ steps.deploy-to-webapp.outputs.webapp-url }}"
+          # echo ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+          # echo "${{ steps.deploy-to-webapp.outputs.webapp-url }}"
           echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
           echo "$DEV_URL"
           echo $DEV_URL
-          echo ${{ env.URL }}
+          echo "DEV_URL>>${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_ENV
+          echo "$DEV_URL"
+          echo $DEV_URL
+          echo "DEV_URL=${{ steps.deploy-to-webapp.outputs.webapp-url }}" >> $GITHUB_OUTPUT
+          echo "$DEV_URL"
+          echo $DEV_URL
 
   dev-deployment-test:
     name: dev app status check
@@ -68,8 +73,6 @@ jobs:
           echo ${{ needs.dev-deployment.outputs.environment_url }}
           response=$(curl -s -o /dev/null -w "%{http_code}" "${{ vars.APP_HEALTH_API }}")
           echo "RESPONSE_HTTP_CODE=$response" >> "$GITHUB_ENV"
-          echo ${{ env.RESPONSE_HTTP_CODE }}
-          echo "${{ env.RESPONSE_HTTP_CODE }}"
           echo "$RESPONSE_HTTP_CODE"
           echo ${{ env.URL }}
           echo "${{ env.URL }}"
